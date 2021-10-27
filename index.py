@@ -81,7 +81,7 @@ async def play(ctx, *, url):
                 await stop(ctx)
             
             voice_client.play(discord.FFmpegPCMAudio(link,**FFMPEG_OPTIONS))
-
+            print(discord.player.is_playing())
     except Exception as e:
         print("#"*100)
         print(e)
