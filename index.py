@@ -24,10 +24,14 @@ load_dotenv(dotenv_path)
 
 client = commands.Bot(command_prefix='-')
 
+
 @client.command()
 async def stop(ctx):
     voice_client = discord.utils.get(client.voice_clients, guild=ctx.guild)
     voice_client.stop()
+
+# metodo para pegar nome do canal de texto
+
 
 @client.command()
 async def c(ctx):
