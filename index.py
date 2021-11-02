@@ -30,9 +30,6 @@ async def stop(ctx):
     voice_client = discord.utils.get(client.voice_clients, guild=ctx.guild)
     voice_client.stop()
 
-# metodo para pegar nome do canal de texto
-
-
 @client.command()
 async def c(ctx):
     try:
@@ -42,7 +39,7 @@ async def c(ctx):
         await connect.connect()
 
         voice_client = discord.utils.get(client.voice_clients, guild=ctx.guild)
-        voice_client.play(discord.FFmpegPCMAudio(executable="vendor/ffmpeg/ffmpeg", source="toca/Bandeirantes.mp3"))
+        # voice_client.play(discord.FFmpegPCMAudio(executable="vendor/ffmpeg/ffmpeg", source="toca/Bandeirantes.mp3"))
         # voice_client.play(discord.FFmpegPCMAudio(executable="ffmpeg.exe", source="toca/Bandeirantes.mp3"))
     except Exception as e:
         print("#"*100)
@@ -64,28 +61,30 @@ async def play(ctx, *, url):
 
     ale = random.randint(1, 4)
     voice_client = discord.utils.get(client.voice_clients, guild=ctx.guild)
-    voice_client.play(discord.FFmpegPCMAudio(executable="vendor/ffmpeg/ffmpeg", source=f"toca/{ale}.mp3"))
-    # voice_client.play(discord.FFmpegPCMAudio(executable="ffmpeg.exe", source=f"toca\\{ale}.mp3"))
+    # voice_client.play(discord.FFmpegPCMAudio(executable="vendor/ffmpeg/ffmpeg", source=f"toca/{ale}.mp3"))
+    voice_client.play(discord.FFmpegPCMAudio(executable="ffmpeg.exe", source=f"toca\\{ale}.mp3"))
     sleep(2)
     try: 
         if url[:5] == "https":
             with YoutubeDL(ydl_opts) as ydl:
-                # info = ydl.extract_info(url, download=False)
-                link = url
+                # url = "ytsearch:"+url
+                dados = ydl.extract_info(url, download=False)
+                link = dados['formats'][0]['url']
+                print(link)
         else:
             with YoutubeDL(ydl_opts) as ydl:
                 url = "ytsearch:"+url
                 dados = ydl.extract_info(url, download=False)
                 p = dados['entries']
-                for itens in p: 
+                for itens in p:
                     link = itens['url']
+                    
 
-            voice_client = discord.utils.get(client.voice_clients, guild=ctx.guild)
-            if voice_client.is_playing():
-                await stop(ctx)
-            
-            voice_client.play(discord.FFmpegPCMAudio(link,**FFMPEG_OPTIONS))
-            print(discord.player.is_playing())
+        voice_client = discord.utils.get(client.voice_clients, guild=ctx.guild)
+        if voice_client.is_playing():
+            await stop(ctx)
+        
+        voice_client.play(discord.FFmpegPCMAudio(link,**FFMPEG_OPTIONS))
     except Exception as e:
         print("#"*100)
         print(e)
