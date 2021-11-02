@@ -70,8 +70,8 @@ async def play(ctx, *, url):
     try: 
         if url[:5] == "https":
             with YoutubeDL(ydl_opts) as ydl:
-                info = ydl.extract_info(url, download=False)
-                link = info['url']
+                # info = ydl.extract_info(url, download=False)
+                link = url
         else:
             with YoutubeDL(ydl_opts) as ydl:
                 url = "ytsearch:"+url
