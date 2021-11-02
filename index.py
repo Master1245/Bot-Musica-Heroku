@@ -114,5 +114,6 @@ async def d(ctx):
         print("#"*100)
 
 token = os.environ.get("token")
+token = token.strip()
 client.run(token)
 
