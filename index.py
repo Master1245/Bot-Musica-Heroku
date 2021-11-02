@@ -16,8 +16,6 @@ ydl_opts = {
     }]
 }
 
-musicas = []
-
 FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
 dotenv_path = ('.env')
 load_dotenv(dotenv_path)
@@ -39,7 +37,7 @@ async def c(ctx):
         await connect.connect()
 
         voice_client = discord.utils.get(client.voice_clients, guild=ctx.guild)
-        # voice_client.play(discord.FFmpegPCMAudio(executable="vendor/ffmpeg/ffmpeg", source="toca/Bandeirantes.mp3"))
+        voice_client.play(discord.FFmpegPCMAudio(executable="vendor/ffmpeg/ffmpeg", source="toca/Bandeirantes.mp3"))
         # voice_client.play(discord.FFmpegPCMAudio(executable="ffmpeg.exe", source="toca/Bandeirantes.mp3"))
     except Exception as e:
         print("#"*100)
@@ -61,8 +59,8 @@ async def play(ctx, *, url):
 
     ale = random.randint(1, 4)
     voice_client = discord.utils.get(client.voice_clients, guild=ctx.guild)
-    # voice_client.play(discord.FFmpegPCMAudio(executable="vendor/ffmpeg/ffmpeg", source=f"toca/{ale}.mp3"))
-    voice_client.play(discord.FFmpegPCMAudio(executable="ffmpeg.exe", source=f"toca\\{ale}.mp3"))
+    voice_client.play(discord.FFmpegPCMAudio(executable="vendor/ffmpeg/ffmpeg", source=f"toca/{ale}.mp3"))
+    # voice_client.play(discord.FFmpegPCMAudio(executable="ffmpeg.exe", source=f"toca\\{ale}.mp3"))
     sleep(2)
     try: 
         if url[:5] == "https":
@@ -94,28 +92,6 @@ async def play(ctx, *, url):
 async def volume(ctx, volume : int):
     voice_client = discord.utils.get(client.voice_clients, guild=ctx.guild)
     voice_client.source.volume = volume/100
-
-# @client.command()
-# async def list(ctx,*,musica):
-#     musicas.append(musica)
-#     print(musicas)
-#     voice_client = discord.utils.get(client.voice_clients, guild=ctx.guild)
-#     print(voice_client.is_playing())
-#     if voice_client.is_playing():
-#         while voice_client.is_playing():
-#             if voice_client.is_playing() == True:
-#                 sleep(4)
-#                 print(ctx)
-#                 print(musicas)
-#             else:
-#                 musi = musicas[0]
-#                 print(musi)
-#                 await play(ctx, url = musi)
-#                 musicas.pop(0)    
-#     else:
-#         await play(ctx, url=musica)
-#         musicas.pop(0)
-
 
 @client.command()
 async def d(ctx):
