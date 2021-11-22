@@ -113,6 +113,18 @@ async def d(ctx):
         print(e)
         print("#"*100)
 
+@client.command()
+async def revolucao(ctx):
+        # 8589934591
+        role = discord.utils.get(ctx.guild.roles, name='Um bosta qualquer')
+        print(role)
+        await discord.Member.add_roles(ctx.author, role)
+        
+
+@client.command()
+async def enviar(ctx):
+    await ctx.channel.purge(limit=6)
+
 token = os.environ.get("token")
 client.run(token)
 
