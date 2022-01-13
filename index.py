@@ -6,7 +6,7 @@ from discord.ext import commands
 import random
 from dotenv import load_dotenv
 
-
+MUSICA = []
 ydl_opts = {
     'format' : 'bestaudio/best',
     'postprocessors': [{
@@ -46,22 +46,57 @@ async def c(ctx):
 
 
 @client.command()
-async def play(ctx, *, url):
+async def play(ctx,*, url):
+    voice_client = discord.utils.get(client.voice_clients, guild=ctx.guild)
+    if voice_client.is_playing():
+        MUSICA.append(url)
+        await ctx.send("Musica adicionada na lista")
+    else:
+        await ctx.channel.send("tocando musica")
+        songs = os.path.isfile(f"/app/song.mp3")
+        
+        if songs:
+            os.remove('/app/song.mp3')
+
+        ale = random.randint(1, 4)
+        voice_client = discord.utils.get(client.voice_clients, guild=ctx.guild)
+        # voice_client.play(discord.FFmpegPCMAudio(executable="vendor/ffmpeg/ffmpeg", source=f"toca/{ale}.mp3"))
+        # voice_client.play(discord.FFmpegPCMAudio(executable="ffmpeg.exe", source=f"toca\\{ale}.mp3"))
+        sleep(2)
+        try: 
+            if url[:5] == "https":
+                with YoutubeDL(ydl_opts) as ydl:
+                    # url = "ytsearch:"+url
+                    dados = ydl.extract_info(url, download=False)
+                    link = dados['formats'][0]['url']
+                    print(link)
+            else:
+                with YoutubeDL(ydl_opts) as ydl:
+                    url = "ytsearch:"+url
+                    dados = ydl.extract_info(url, download=False)
+                    p = dados['entries']
+                    for itens in p:
+                        link = itens['url']
+                        
+
+            voice_client = discord.utils.get(client.voice_clients, guild=ctx.guild)
+            if voice_client.is_playing():
+                await stop(ctx)
+            
+            voice_client.play(discord.FFmpegPCMAudio(link,**FFMPEG_OPTIONS))
+        except Exception as e:
+            print("#"*100)
+            print(e)
+            print("#"*100)
+
+
+@client.command()
+async def skip(ctx):
+    url = MUSICA.pop(0)
     voice_client = discord.utils.get(client.voice_clients, guild=ctx.guild)
     if voice_client.is_playing():
         await stop(ctx)
-    
-    await ctx.channel.send("tocando musica")
-    songs = os.path.isfile(f"/app/song.mp3")
-    
-    if songs:
-        os.remove('/app/song.mp3')
-
-    ale = random.randint(1, 4)
-    voice_client = discord.utils.get(client.voice_clients, guild=ctx.guild)
-    voice_client.play(discord.FFmpegPCMAudio(executable="vendor/ffmpeg/ffmpeg", source=f"toca/{ale}.mp3"))
-    # voice_client.play(discord.FFmpegPCMAudio(executable="ffmpeg.exe", source=f"toca\\{ale}.mp3"))
-    sleep(2)
+    await ctx.send("Tocado Musica : "+url)
     try: 
         if url[:5] == "https":
             with YoutubeDL(ydl_opts) as ydl:
@@ -78,20 +113,21 @@ async def play(ctx, *, url):
                     link = itens['url']
                     
 
-        voice_client = discord.utils.get(client.voice_clients, guild=ctx.guild)
-        if voice_client.is_playing():
-            await stop(ctx)
-        
+        voice_client = discord.utils.get(client.voice_clients, guild=ctx.guild)        
         voice_client.play(discord.FFmpegPCMAudio(link,**FFMPEG_OPTIONS))
     except Exception as e:
         print("#"*100)
         print(e)
         print("#"*100)
 
+
 @client.command()
-async def volume(ctx, volume : int):
-    voice_client = discord.utils.get(client.voice_clients, guild=ctx.guild)
-    voice_client.source.volume = volume/100
+async def lista(ctx):
+    ctx.send("Musica da lista")
+    ctx.send("#"*20)
+    for i in MUSICA:
+        await ctx.send(i)
+    ctx.send("#"*20)
 
 @client.command()
 async def d(ctx):
@@ -99,9 +135,6 @@ async def d(ctx):
         voice_client = discord.utils.get(client.voice_clients, guild=ctx.guild)
         if voice_client.is_playing():
             await stop(ctx)
-            voice_client.play(discord.FFmpegPCMAudio(executable="vendor/ffmpeg/ffmpeg", source="toca/palmeiras.mp3"))
-            sleep(3)
-        else:
             voice_client.play(discord.FFmpegPCMAudio(executable="vendor/ffmpeg/ffmpeg", source="toca/palmeiras.mp3"))
             sleep(3)
         if voice_client.is_connected():
